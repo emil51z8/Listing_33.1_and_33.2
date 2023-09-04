@@ -15,31 +15,39 @@ import java.net.Socket;
 import java.util.Date;
 
 public class Server extends Application {
-    @Override
+    @Override //Override the start method in the Application Class
     public void start (Stage primaryStage){
+        //Text area for displaying contents
         TextArea ta = new TextArea();
 
+        // Create a scene and place it in the stage
         Scene scene = new Scene(new ScrollPane(ta),450,200);
-        primaryStage.setTitle("Server");
-        primaryStage.setScene(scene);
-        primaryStage.show();
+        primaryStage.setTitle("Server"); //set the stage title
+        primaryStage.setScene(scene); // Place the scene in the stage
+        primaryStage.show(); //display the stage
 
         new Thread(() -> {
-            ServerSocket serverSocket = null;
+
             try {
-                serverSocket = new ServerSocket(8000);
+                //Create a server socket
+                ServerSocket serverSocket = new ServerSocket(8000);
                 Platform.runLater(() -> ta.appendText("Server started at " + new Date() + '\n'));
 
+                //Listen for a connection request
                 Socket socket = serverSocket.accept();
 
+                //create data input and output streams
                 DataInputStream inputFromClient = new DataInputStream(socket.getInputStream());
                 DataOutputStream outputToClient = new DataOutputStream(socket.getOutputStream());
 
                 while(true){
+                    // Receive radius from the client
                     double radius = inputFromClient.readDouble();
 
+                    //compute area
                     double area = radius * radius * Math.PI;
 
+                    //send area back to the client
                     outputToClient.writeDouble(area);
 
                     Platform.runLater(() -> {
